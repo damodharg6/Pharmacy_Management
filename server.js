@@ -33,7 +33,11 @@ app.use('/api', apiRoutes);
 app.use('/', routes);
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
-    console.log(`✅ Pharmacy Management Server running at: http://localhost:${port}`);
-    console.log(`   Admin login: admin@pharmacy.com / Admin@123`);
-});
+if (require.main === module) {
+    app.listen(port, () => {
+        console.log(`✅ Pharmacy Management Server running at: http://localhost:${port}`);
+        console.log(`   Admin login: admin@pharmacy.com / Admin@123`);
+    });
+}
+
+module.exports = app;
