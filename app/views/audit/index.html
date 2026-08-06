@@ -1,0 +1,66 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2><i class="fa fa-shield"></i> Security & Audit Trail Logs</h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <div class="row" style="margin-bottom: 15px;">
+                    <div class="col-md-3">
+                        <select class="form-control" ng-model="filterModule" ng-change="loadLogs()">
+                            <option value="">-- All Modules --</option>
+                            <option value="auth">Authentication</option>
+                            <option value="user">User Management</option>
+                            <option value="medicine">Medicine Inventory</option>
+                            <option value="order">Order Management</option>
+                            <option value="prescription">Prescriptions</option>
+                            <option value="supplier">Suppliers</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div ng-if="loading" class="text-center" style="padding: 30px;">
+                    <i class="fa fa-spinner fa-spin fa-2x"></i> Loading audit logs...
+                </div>
+
+                <table class="table table-striped table-bordered" ng-if="!loading && logs.length > 0">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Module</th>
+                            <th>Action</th>
+                            <th>Details</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="log in logs">
+                            <td>{{log.createdAt | date:'medium'}}</td>
+                            <td><strong>{{log.userName || 'System'}}</strong></td>
+                            <td><span class="label label-default">{{log.userRole || 'system'}}</span></td>
+                            <td><span class="badge bg-blue">{{log.module}}</span></td>
+                            <td><code>{{log.action}}</code></td>
+                            <td>{{log.details || '-'}}</td>
+                            <td>
+                                <span class="label" ng-class="{'label-success': log.status === 'success', 'label-danger': log.status === 'failure'}">
+                                    {{log.status}}
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="row" ng-if="totalPages > 1">
+                    <div class="col-md-6">Page {{page}} of {{totalPages}}</div>
+                    <div class="col-md-6 text-right">
+                        <button class="btn btn-default btn-sm" ng-disabled="page <= 1" ng-click="prevPage()">Previous</button>
+                        <button class="btn btn-default btn-sm" ng-disabled="page >= totalPages" ng-click="nextPage()">Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

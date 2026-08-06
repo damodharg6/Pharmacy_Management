@@ -1,0 +1,167 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="x_panel">
+            <div class="x_title hidden-print">
+                <h2><i class="fa fa-bar-chart"></i> System Reports & Analytics</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                    <li><button class="btn btn-success btn-xs" ng-click="exportCSV()"><i class="fa fa-file-excel-o"></i> Export CSV</button></li>
+                    <li><button class="btn btn-default btn-xs" ng-click="printReport()"><i class="fa fa-print"></i> Print / Export PDF</button></li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="x_content">
+                <!-- Filters -->
+                <div class="well hidden-print">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Report Module</label>
+                            <select class="form-control" ng-model="reportType" ng-change="loadReport()">
+                                <option value="sales">Sales & Revenue Report</option>
+                                <option value="medicines">Medicine Stock Report</option>
+                                <option value="inventory">Inventory Transaction Log</option>
+                                <option value="users">Users & Staff Report</option>
+                                <option value="prescriptions">Prescriptions Report</option>
+                                <option value="suppliers">Suppliers List Report</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Start Date</label>
+                            <input type="date" class="form-control" ng-model="startDate" ng-change="loadReport()">
+                        </div>
+                        <div class="col-md-3">
+                            <label>End Date</label>
+                            <input type="date" class="form-control" ng-model="endDate" ng-change="loadReport()">
+                        </div>
+                        <div class="col-md-3" style="margin-top: 25px;">
+                            <button class="btn btn-primary" ng-click="loadReport()"><i class="fa fa-filter"></i> Apply Filter</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report Summary if available -->
+                <div class="row tile_count" ng-if="reportType === 'sales' && summary.totalOrders">
+                    <div class="col-md-4 tile_stats_count">
+                        <span class="count_top">Total Orders</span>
+                        <div class="count">{{summary.totalOrders}}</div>
+                    </div>
+                    <div class="col-md-4 tile_stats_count">
+                        <span class="count_top">Total Revenue</span>
+                        <div class="count green">₹{{summary.totalRevenue | number:2}}</div>
+                    </div>
+                    <div class="col-md-4 tile_stats_count">
+                        <span class="count_top">Total Discount Given</span>
+                        <div class="count red">₹{{summary.totalDiscount | number:2}}</div>
+                    </div>
+                </div>
+
+                <div ng-if="loading" class="text-center" style="padding: 30px;">
+                    <i class="fa fa-spinner fa-spin fa-2x"></i> Generating report...
+                </div>
+
+                <div ng-if="!loading && reportData.length === 0" class="text-center text-muted" style="padding: 30px;">
+                    <p>No data available for the selected report filters.</p>
+                </div>
+
+                <!-- Sales Report -->
+                <table class="table table-striped table-bordered" ng-if="!loading && reportType === 'sales' && reportData.length">
+                    <thead>
+                        <tr>
+                            <th>Order No</th>
+                            <th>Customer Name</th>
+                            <th>Items</th>
+                            <th>Subtotal</th>
+                            <th>Discount</th>
+                            <th>Total Revenue</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="row in reportData">
+                            <td>{{row.orderNo}}</td>
+                            <td>{{row.customer.name}}</td>
+                            <td>{{row.items.length}}</td>
+                            <td>₹{{row.subtotal | number:2}}</td>
+                            <td>₹{{row.discount | number:2}}</td>
+                            <td><strong>₹{{row.total | number:2}}</strong></td>
+                            <td><span class="label label-info">{{row.status}}</span></td>
+                            <td>{{row.createdAt | date:'medium'}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Medicine Stock Report -->
+                <table class="table table-striped table-bordered" ng-if="!loading && reportType === 'medicines' && reportData.length">
+                    <thead>
+                        <tr>
+                            <th>Medicine Name</th>
+                            <th>Category</th>
+                            <th>Batch No</th>
+                            <th>Price</th>
+                            <th>Stock Quantity</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="row in reportData">
+                            <td>{{row.name}}</td>
+                            <td>{{row.category.name || '-'}}</td>
+                            <td>{{row.batchNumber || '-'}}</td>
+                            <td>₹{{row.price | number:2}}</td>
+                            <td>{{row.quantity}} {{row.unit}}s</td>
+                            <td>
+                                <span class="label" ng-class="{'label-danger': row.quantity <= row.reorderLevel, 'label-success': row.quantity > row.reorderLevel}">
+                                    {{row.quantity <= row.reorderLevel ? 'Low Stock' : 'Sufficient'}}
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Inventory Log Report -->
+                <table class="table table-striped table-bordered" ng-if="!loading && reportType === 'inventory' && reportData.length">
+                    <thead>
+                        <tr>
+                            <th>Medicine</th>
+                            <th>Type</th>
+                            <th>Quantity</th>
+                            <th>Balance After</th>
+                            <th>Reference</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="row in reportData">
+                            <td>{{row.medicineName}}</td>
+                            <td><span class="label label-default">{{row.transactionType}}</span></td>
+                            <td ng-class="{'text-success': row.quantity > 0, 'text-danger': row.quantity < 0}">{{row.quantity}}</td>
+                            <td>{{row.balanceAfter}}</td>
+                            <td>{{row.reference || '-'}}</td>
+                            <td>{{row.createdAt | date:'medium'}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Generic Fallback for other reports -->
+                <div ng-if="!loading && ['users', 'prescriptions', 'suppliers'].indexOf(reportType) !== -1 && reportData.length">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th ng-repeat="(key, val) in reportData[0]" ng-if="key !== '_id' && key !== '__v' && key !== 'password'">{{key | uppercase}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="row in reportData">
+                                <td ng-repeat="(key, val) in row" ng-if="key !== '_id' && key !== '__v' && key !== 'password'">
+                                    {{ (val && val.name) ? val.name : (val | json) }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

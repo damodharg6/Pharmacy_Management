@@ -1,0 +1,87 @@
+<div ng-if="toast.show" class="alert" ng-class="{'alert-success': toast.type === 'success', 'alert-danger': toast.type === 'error'}" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 250px;">
+    {{toast.message}}
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2><i class="fa fa-file-text-o"></i> Prescription Management</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                    <li><a ui-sref="createPrescription" class="btn btn-primary btn-xs"><i class="fa fa-plus"></i> New Prescription</a></li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="x_content">
+                <!-- Filters -->
+                <div class="row" style="margin-bottom: 15px;">
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search patient, doctor, Rx #..." ng-model="search" ng-change="loadPrescriptions()">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="button" ng-click="loadPrescriptions()"><i class="fa fa-search"></i></button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control" ng-model="filterStatus" ng-change="loadPrescriptions()">
+                            <option value="">-- All Statuses --</option>
+                            <option value="active">Active (Pending Dispense)</option>
+                            <option value="dispensed">Dispensed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div ng-if="loading" class="text-center" style="padding: 30px;">
+                    <i class="fa fa-spinner fa-spin fa-2x"></i> Loading prescriptions...
+                </div>
+
+                <div ng-if="!loading && prescriptions.length === 0" class="text-center text-muted" style="padding: 30px;">
+                    <i class="fa fa-file-text-o fa-2x"></i>
+                    <p>No prescriptions found.</p>
+                </div>
+
+                <table class="table table-striped table-bordered" ng-if="!loading && prescriptions.length > 0">
+                    <thead>
+                        <tr>
+                            <th>Rx No</th>
+                            <th>Patient Name</th>
+                            <th>Age</th>
+                            <th>Doctor</th>
+                            <th>Medicines Count</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="rx in prescriptions">
+                            <td><strong>{{rx.prescriptionNo}}</strong></td>
+                            <td>{{rx.patientName}} <small class="text-muted">({{rx.patientPhone || 'No phone'}})</small></td>
+                            <td>{{rx.patientAge}} yrs</td>
+                            <td>{{rx.doctorName || (rx.doctor ? rx.doctor.name : 'Doctor')}}</td>
+                            <td>{{rx.medicines.length}} medicines</td>
+                            <td>{{rx.date | date:'mediumDate'}}</td>
+                            <td>
+                                <span class="label" ng-class="{
+                                    'label-warning': rx.status === 'active',
+                                    'label-success': rx.status === 'dispensed',
+                                    'label-danger': rx.status === 'cancelled'
+                                }">{{rx.status | uppercase}}</span>
+                            </td>
+                            <td>
+                                <button ng-if="rx.status === 'active'" class="btn btn-xs btn-success" ng-click="dispense(rx)">
+                                    <i class="fa fa-check"></i> Dispense & Reduce Stock
+                                </button>
+                                <a ui-sref="editPrescription({id: rx._id})" ng-if="rx.status === 'active'" class="btn btn-xs btn-primary"><i class="fa fa-edit"></i> Edit</a>
+                                <button ng-if="rx.status === 'active'" class="btn btn-xs btn-danger" ng-click="cancelPrescription(rx)"><i class="fa fa-times"></i> Cancel</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

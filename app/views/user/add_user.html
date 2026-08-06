@@ -1,0 +1,94 @@
+<div ng-if="toast.show" class="alert" ng-class="{'alert-success': toast.type === 'success', 'alert-danger': toast.type === 'error'}" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 250px;">
+    {{toast.message}}
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2><i class="fa fa-user-plus"></i> Add New Staff Member or Doctor</h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <form name="userForm" ng-submit="saveData(user)" novalidate class="form-horizontal form-label-left">
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Full Name <span class="required">*</span></label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input class="form-control" ng-model="user.name" name="name" placeholder="Enter Full Name" ng-required="true" type="text">
+                            <p ng-show="userForm.name.$error.required && (userForm.$submitted || userForm.name.$dirty)" class="text-danger">Please enter full name</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Email Address <span class="required">*</span></label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input ng-model="user.email" ng-required="true" type="email" name="email" class="form-control" placeholder="user@pharmacy.com">
+                            <p ng-show="userForm.email.$error.required && (userForm.$submitted || userForm.email.$dirty)" class="text-danger">Please enter email</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">NIC / National ID <span class="required">*</span></label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input ng-model="user.nic" ng-required="true" type="text" name="nic" class="form-control" placeholder="NIC Number">
+                            <p ng-show="userForm.nic.$error.required && (userForm.$submitted || userForm.nic.$dirty)" class="text-danger">Please enter NIC</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Mobile Phone <span class="required">*</span></label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input ng-model="user.number" ng-required="true" type="text" name="number" class="form-control" placeholder="+91 9876543210">
+                            <p ng-show="userForm.number.$error.required && (userForm.$submitted || userForm.number.$dirty)" class="text-danger">Please enter phone number</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">User Role <span class="required">*</span></label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <select ng-model="user.role" ng-required="true" class="form-control">
+                                <option value="">-- Select Role --</option>
+                                <option value="admin">System Admin</option>
+                                <option value="doctor">Doctor</option>
+                                <option value="pharmacist">Pharmacist</option>
+                                <option value="chief_pharmacist">Chief Pharmacist</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Password <span class="required">*</span></label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input ng-model="user.password" ng-required="true" type="password" name="password" class="form-control" placeholder="Minimum 6 characters">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Repeat Password <span class="required">*</span></label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input ng-model="user.password2" ng-required="true" type="password" name="password2" class="form-control" placeholder="Re-enter password">
+                            <p ng-show="user.password && user.password2 && user.password !== user.password2" class="text-danger">Passwords do not match</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Address</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <textarea ng-model="user.address" class="form-control" rows="2" placeholder="Full address..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="ln_solid"></div>
+                    <div class="form-group">
+                        <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                            <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Create User</button>
+                            <a ui-sref="users" class="btn btn-default">Cancel</a>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

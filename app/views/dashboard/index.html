@@ -1,0 +1,224 @@
+<!-- Dashboard View -->
+<div ng-if="loading" class="text-center" style="padding:50px">
+    <i class="fa fa-spinner fa-spin fa-3x"></i>
+    <p>Loading dashboard...</p>
+</div>
+
+<div ng-if="!loading">
+    <!-- Admin & Pharmacist Stats Row -->
+    <div class="row tile_count" ng-if="currentUser.role === 'admin' || currentUser.role === 'pharmacist'">
+        <div class="col-md-2 col-sm-4 tile_stats_count" ng-if="currentUser.role === 'admin'">
+            <span class="count_top"><i class="fa fa-users"></i> Total Staff</span>
+            <div class="count">{{stats.totalUsers || 0}}</div>
+            <span class="count_bottom"><i class="green">Active users</i></span>
+        </div>
+        <div class="col-md-2 col-sm-4 tile_stats_count" ng-if="currentUser.role === 'admin'">
+            <span class="count_top"><i class="fa fa-user-md"></i> Doctors</span>
+            <div class="count">{{stats.totalDoctors || 0}}</div>
+            <span class="count_bottom"><i class="green">Registered doctors</i></span>
+        </div>
+        <div class="col-md-3 col-sm-6 tile_stats_count" ng-class="{'col-md-2 col-sm-4': currentUser.role === 'admin'}">
+            <span class="count_top"><i class="fa fa-medkit"></i> Medicines</span>
+            <div class="count">{{stats.totalMedicines || 0}}</div>
+            <span class="count_bottom">
+                <i ng-class="{'red': stats.lowStockMedicines > 0, 'green': stats.lowStockMedicines === 0}">
+                    {{stats.lowStockMedicines || 0}} low stock
+                </i>
+            </span>
+        </div>
+        <div class="col-md-3 col-sm-6 tile_stats_count" ng-class="{'col-md-2 col-sm-4': currentUser.role === 'admin'}">
+            <span class="count_top"><i class="fa fa-truck"></i> Suppliers</span>
+            <div class="count">{{stats.totalSuppliers || 0}}</div>
+            <span class="count_bottom"><i class="green">Active suppliers</i></span>
+        </div>
+        <div class="col-md-3 col-sm-6 tile_stats_count" ng-class="{'col-md-2 col-sm-4': currentUser.role === 'admin'}">
+            <span class="count_top"><i class="fa fa-shopping-cart"></i> Pending Orders</span>
+            <div class="count orange">{{stats.pendingOrders || 0}}</div>
+            <span class="count_bottom"><i class="green">{{stats.completedOrders || 0}} delivered</i></span>
+        </div>
+        <div class="col-md-3 col-sm-6 tile_stats_count" ng-class="{'col-md-2 col-sm-4': currentUser.role === 'admin'}">
+            <span class="count_top"><i class="fa fa-inr"></i> Today's Sales</span>
+            <div class="count green">₹{{(stats.todaySales || 0) | number:2}}</div>
+            <span class="count_bottom"><i class="green">Today's revenue</i></span>
+        </div>
+    </div>
+
+    <!-- Doctor Stats Row -->
+    <div class="row tile_count" ng-if="currentUser.role === 'doctor'">
+        <div class="col-md-4 col-sm-4 tile_stats_count">
+            <span class="count_top"><i class="fa fa-file-text-o"></i> My Prescriptions</span>
+            <div class="count blue">{{stats.myPrescriptions || 0}}</div>
+            <span class="count_bottom"><i class="green">Issued by you</i></span>
+        </div>
+        <div class="col-md-4 col-sm-4 tile_stats_count">
+            <span class="count_top"><i class="fa fa-wheelchair"></i> Active Patients</span>
+            <div class="count green">{{stats.activePatients || 0}}</div>
+            <span class="count_bottom"><i class="green">Unique patients</i></span>
+        </div>
+        <div class="col-md-4 col-sm-4 tile_stats_count">
+            <span class="count_top"><i class="fa fa-medkit"></i> Available Medicines</span>
+            <div class="count">{{stats.totalMedicines || 0}}</div>
+            <span class="count_bottom"><i class="green">In inventory lookup</i></span>
+        </div>
+    </div>
+
+    <!-- Admin & Pharmacist Main Content Row -->
+    <div class="row" ng-if="currentUser.role === 'admin' || currentUser.role === 'pharmacist'">
+        <!-- Recent Orders -->
+        <div class="col-md-7">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Recent Sales Orders</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li><a ui-sref="orders" class="btn btn-xs btn-default">View All</a></li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div ng-if="!recentOrders.length" class="text-center text-muted" style="padding:20px">
+                        <i class="fa fa-shopping-cart fa-2x"></i>
+                        <p>No orders yet. <a ui-sref="createOrder">Create first order</a></p>
+                    </div>
+                    <table class="table table-striped" ng-if="recentOrders.length">
+                        <thead>
+                            <tr>
+                                <th>Order No</th>
+                                <th>Customer</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="order in recentOrders">
+                                <td><a ui-sref="orderDetail({id: order._id})">{{order.orderNo}}</a></td>
+                                <td>{{order.customer.name}}</td>
+                                <td>₹{{order.total | number:2}}</td>
+                                <td>
+                                    <span class="badge" ng-class="{
+                                        'bg-green': order.status === 'delivered',
+                                        'bg-orange': order.status === 'pending',
+                                        'bg-blue': order.status === 'processing',
+                                        'bg-red': order.status === 'cancelled'
+                                    }">{{order.status}}</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Feed -->
+        <div class="col-md-5">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Recent Stock Activity</h2>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div ng-if="!latestActivity.length" class="text-center text-muted" style="padding:20px">
+                        <i class="fa fa-list fa-2x"></i>
+                        <p>No activity yet.</p>
+                    </div>
+                    <ul class="list-unstyled" ng-if="latestActivity.length">
+                        <li ng-repeat="log in latestActivity" style="padding:8px 0; border-bottom:1px solid #f0f0f0">
+                            <span class="badge" ng-class="{
+                                'bg-green': log.transactionType === 'purchase',
+                                'bg-red': log.transactionType === 'sale' || log.transactionType === 'dispense',
+                                'bg-orange': log.transactionType === 'adjustment'
+                            }">{{log.transactionType}}</span>
+                            <strong>{{log.medicineName}}</strong>
+                            <span ng-class="{'text-success': log.quantity > 0, 'text-danger': log.quantity < 0}">
+                                {{log.quantity > 0 ? '+' : ''}}{{log.quantity}}
+                            </span>
+                            <small class="text-muted pull-right">{{log.createdAt | date:'MMM d, HH:mm'}}</small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doctor Main Content Row -->
+    <div class="row" ng-if="currentUser.role === 'doctor'">
+        <div class="col-md-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2><i class="fa fa-file-text"></i> My Recent Prescriptions</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li><a ui-sref="createPrescription" class="btn btn-xs btn-success"><i class="fa fa-plus"></i> New Prescription</a></li>
+                        <li><a ui-sref="prescriptions" class="btn btn-xs btn-default">View All</a></li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div ng-if="!recentPrescriptions.length" class="text-center text-muted" style="padding:30px">
+                        <i class="fa fa-user-md fa-3x"></i>
+                        <p style="margin-top:10px">No prescriptions created yet. <a ui-sref="createPrescription">Create your first prescription</a></p>
+                    </div>
+                    <table class="table table-striped" ng-if="recentPrescriptions.length">
+                        <thead>
+                            <tr>
+                                <th>Patient Name</th>
+                                <th>Age</th>
+                                <th>Diagnosis</th>
+                                <th>Medicines</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="p in recentPrescriptions">
+                                <td><strong>{{p.patientName}}</strong></td>
+                                <td>{{p.patientAge}}</td>
+                                <td>{{p.diagnosis}}</td>
+                                <td>{{p.medicines.length}} prescribed</td>
+                                <td>
+                                    <span class="badge" ng-class="{
+                                        'bg-green': p.status === 'active',
+                                        'bg-blue': p.status === 'dispensed',
+                                        'bg-red': p.status === 'cancelled'
+                                    }">{{p.status}}</span>
+                                </td>
+                                <td>{{p.createdAt | date:'MMM d, yyyy'}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Quick Actions</h2>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <!-- Admin & Pharmacist Order Action -->
+                    <a ui-sref="createOrder" class="btn btn-primary" style="margin:5px" ng-if="currentUser.role === 'admin' || currentUser.role === 'pharmacist'"><i class="fa fa-plus"></i> New Order</a>
+                    
+                    <!-- All Roles Prescription Action -->
+                    <a ui-sref="createPrescription" class="btn btn-success" style="margin:5px"><i class="fa fa-file-text"></i> New Prescription</a>
+                    
+                    <!-- Doctor Medicine Lookup Action -->
+                    <a ui-sref="medicines" class="btn btn-info" style="margin:5px" ng-if="currentUser.role === 'doctor'"><i class="fa fa-search"></i> Medicine Lookup</a>
+                    
+                    <!-- Admin & Pharmacist Inventory Action -->
+                    <a ui-sref="createMedicine" class="btn btn-info" style="margin:5px" ng-if="currentUser.role === 'admin' || currentUser.role === 'pharmacist'"><i class="fa fa-medkit"></i> Add Medicine</a>
+                    
+                    <!-- Admin & Pharmacist Supplier Action -->
+                    <a ui-sref="addSupplier" class="btn btn-warning" style="margin:5px" ng-if="currentUser.role === 'admin' || currentUser.role === 'pharmacist'"><i class="fa fa-truck"></i> Add Supplier</a>
+                    
+                    <!-- Admin ONLY User Action -->
+                    <a ui-sref="add_user" class="btn btn-default" style="margin:5px" ng-if="currentUser.role === 'admin'"><i class="fa fa-user-plus"></i> Add User</a>
+                    
+                    <button class="btn btn-default pull-right" ng-click="refresh()" style="margin:5px"><i class="fa fa-refresh"></i> Refresh</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

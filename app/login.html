@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="/">
+
+    <title>Pharmacy ERP System Login</title>
+
+    <style>
+      [ng-cloak], .ng-cloak { display: none !important; }
+    </style>
+
+    <!-- Angular -->
+    <script src="node_modules/angular/angular.js"></script>
+    <script src="node_modules/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="app.js"></script>
+    <script src="services/authService.js"></script>
+    <script src="controllers/auth.controller.js"></script>
+
+    <!-- Bootstrap -->
+    <link href="vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="build/css/custom.min.css" rel="stylesheet">
+  </head>
+
+  <body class="login ng-cloak" ng-cloak ng-controller="authController">
+    <div>
+      <div class="login_wrapper">
+        <div class="animate form login_form">
+          <section class="login_content">
+            <form ng-submit="login()">
+              <h1><i class="fa fa-hospital-o"></i> Pharmacy ERP</h1>
+              <p class="text-muted">Enter credentials to access system</p>
+
+              <div ng-if="error" class="alert alert-danger" style="text-align: left;" ng-bind="error"></div>
+
+              <div>
+                <input type="email" class="form-control" placeholder="Email Address" ng-model="credentials.email" required />
+              </div>
+              <div style="margin-top: 10px;">
+                <input type="password" class="form-control" placeholder="Password" ng-model="credentials.password" required />
+              </div>
+
+              <div style="margin-top: 15px;">
+                <button type="submit" class="btn btn-primary btn-block btn-lg" ng-disabled="loading">
+                  <i class="fa fa-sign-in" ng-if="!loading"></i>
+                  <i class="fa fa-spinner fa-spin" ng-if="loading"></i>
+                  Log In
+                </button>
+              </div>
+
+              <div style="margin-top: 20px; padding: 15px; background: #f7f7f7; border-radius: 5px; text-align: left;">
+                <small><strong>Quick Demo Fill:</strong></small><br>
+                <button type="button" class="btn btn-xs btn-info" style="margin-top: 5px;" ng-click="credentials.email='admin@pharmacy.com'; credentials.password='Admin@123'; login();">
+                  Admin Demo
+                </button>
+                <button type="button" class="btn btn-xs btn-success" style="margin-top: 5px;" ng-click="credentials.email='pharmacist@pharmacy.com'; credentials.password='Pharma@123'; login();">
+                  Pharmacist Demo
+                </button>
+                <button type="button" class="btn btn-xs btn-warning" style="margin-top: 5px;" ng-click="credentials.email='doctor@pharmacy.com'; credentials.password='Doctor@123'; login();">
+                  Doctor Demo
+                </button>
+              </div>
+
+              <div class="clearfix"></div>
+
+              <div class="separator">
+                <div>
+                  <p>©2026 Pharmacy ERP Management System. All Rights Reserved.</p>
+                </div>
+              </div>
+            </form>
+          </section>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

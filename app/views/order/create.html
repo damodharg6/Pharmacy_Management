@@ -1,0 +1,129 @@
+<div ng-if="toast.show" class="alert" ng-class="{'alert-success': toast.type === 'success', 'alert-danger': toast.type === 'error'}" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 250px;">
+    {{toast.message}}
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2><i class="fa fa-shopping-cart"></i> Create Sales Order / Invoice</h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <form ng-submit="placeOrder()" novalidate>
+                    <!-- Customer Section -->
+                    <div class="well">
+                        <h4>Customer Information</h4>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Customer Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" ng-model="order.customer.name" required placeholder="Full Name">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Phone Number</label>
+                                    <input type="text" class="form-control" ng-model="order.customer.phone" placeholder="+91 9876543210">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" class="form-control" ng-model="order.customer.email" placeholder="customer@example.com">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Items Table -->
+                    <h4>Order Items</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr class="bg-primary" style="color: white;">
+                                <th style="width: 45%;">Medicine <span class="text-danger">*</span></th>
+                                <th style="width: 15%;">Unit Price (₹)</th>
+                                <th style="width: 15%;">Quantity <span class="text-danger">*</span></th>
+                                <th style="width: 15%;">Subtotal (₹)</th>
+                                <th style="width: 10%;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in order.items">
+                                <td>
+                                    <select class="form-control" ng-model="item.medicine" ng-change="onMedicineSelect(item)" required>
+                                        <option value="">-- Select Medicine --</option>
+                                        <option ng-repeat="med in availableMedicines" value="{{med._id}}" ng-disabled="med.quantity <= 0">
+                                            {{med.name}} (Stock: {{med.quantity}} {{med.unit}}s | ₹{{med.price}})
+                                        </option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" step="0.01" class="form-control" ng-model="item.unitPrice" ng-change="calculateItemTotal(item)" readonly>
+                                </td>
+                                <td>
+                                    <input type="number" min="1" max="{{item.maxQty}}" class="form-control" ng-model="item.quantity" ng-change="calculateItemTotal(item)" required>
+                                </td>
+                                <td>
+                                    <strong>₹{{(item.total || 0) | number:2}}</strong>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-xs" ng-click="removeItem($index)"><i class="fa fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr ng-if="order.items.length === 0">
+                                <td colspan="5" class="text-center text-muted">No items added yet. Click "Add Item" below.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <button type="button" class="btn btn-info btn-sm" ng-click="addItem()"><i class="fa fa-plus"></i> Add Item</button>
+
+                    <hr>
+
+                    <!-- Summary & Calculation -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Notes / Instructions</label>
+                                <textarea class="form-control" ng-model="order.notes" rows="3" placeholder="Order notes or prescription ref..."></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="well">
+                                <div class="row">
+                                    <div class="col-xs-6">Subtotal:</div>
+                                    <div class="col-xs-6 text-right"><strong>₹{{(order.subtotal || 0) | number:2}}</strong></div>
+                                </div>
+                                <div class="row" style="margin-top: 10px;">
+                                    <div class="col-xs-6">Discount (₹):</div>
+                                    <div class="col-xs-6">
+                                        <input type="number" class="form-control input-sm text-right" ng-model="order.discount" ng-change="calculateTotal()">
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top: 10px;">
+                                    <div class="col-xs-6">Tax (₹):</div>
+                                    <div class="col-xs-6">
+                                        <input type="number" class="form-control input-sm text-right" ng-model="order.tax" ng-change="calculateTotal()">
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-xs-6"><h4>Grand Total:</h4></div>
+                                    <div class="col-xs-6 text-right"><h4 class="text-success">₹{{(order.total || 0) | number:2}}</h4></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group text-right">
+                        <a ui-sref="orders" class="btn btn-default">Cancel</a>
+                        <button type="submit" class="btn btn-success btn-lg" ng-disabled="loading || order.items.length === 0">
+                            <i class="fa fa-check-circle"></i> Save & Generate Invoice
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

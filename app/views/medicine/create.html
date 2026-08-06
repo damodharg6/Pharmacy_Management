@@ -1,0 +1,123 @@
+<div ng-if="toast.show" class="alert" ng-class="{'alert-success': toast.type === 'success', 'alert-danger': toast.type === 'error'}" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 250px;">
+    {{toast.message}}
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2><i class="fa fa-medkit"></i> {{medicine._id ? 'Edit Medicine' : 'Add New Medicine'}}</h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <form name="medicineForm" ng-submit="saveMedicine()" novalidate class="form-horizontal form-label-left">
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Medicine Name <span class="required">*</span></label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type="text" class="form-control" ng-model="medicine.name" required placeholder="e.g. Paracetamol 500mg">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Generic Name</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type="text" class="form-control" ng-model="medicine.genericName" placeholder="e.g. Acetaminophen">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Category <span class="required">*</span></label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <select class="form-control" ng-model="medicine.category" required>
+                                <option value="">-- Select Category --</option>
+                                <option ng-repeat="cat in categories" value="{{cat._id}}">{{cat.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Manufacturer</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type="text" class="form-control" ng-model="medicine.manufacturer" placeholder="e.g. Cipla, Sun Pharma">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Unit Type</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <select class="form-control" ng-model="medicine.unit">
+                                <option value="tablet">Tablet</option>
+                                <option value="capsule">Capsule</option>
+                                <option value="syrup">Syrup</option>
+                                <option value="injection">Injection</option>
+                                <option value="cream">Cream</option>
+                                <option value="drops">Drops</option>
+                                <option value="inhaler">Inhaler</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Selling Price (₹) <span class="required">*</span></label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type="number" step="0.01" class="form-control" ng-model="medicine.price" required placeholder="0.00">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Cost Price (₹)</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type="number" step="0.01" class="form-control" ng-model="medicine.costPrice" placeholder="0.00">
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-if="!medicine._id">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Initial Stock Quantity</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type="number" class="form-control" ng-model="medicine.quantity" placeholder="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Reorder Alert Threshold</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type="number" class="form-control" ng-model="medicine.reorderLevel" placeholder="10">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Batch Number</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type="text" class="form-control" ng-model="medicine.batchNumber" placeholder="e.g. BATCH-2024-001">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Expiry Date</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type="date" class="form-control" ng-model="medicine.expiryDate">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Barcode / SKU</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type="text" class="form-control" ng-model="medicine.barcode" placeholder="Barcode scanner ID">
+                        </div>
+                    </div>
+
+                    <div class="ln_solid"></div>
+                    <div class="form-group">
+                        <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                            <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Save Medicine</button>
+                            <a ui-sref="medicines" class="btn btn-default">Cancel</a>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
