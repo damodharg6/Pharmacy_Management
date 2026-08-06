@@ -3,7 +3,7 @@
 
     angular.module('app', ['ui.router'])
         .constant('globalConfig', {
-            apiAddress: 'http://localhost:3000/api'
+            apiAddress: '/api'
         })
         .config(function($stateProvider, $urlRouterProvider, $httpProvider) {
             // HTTP Interceptor
